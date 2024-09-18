@@ -1,0 +1,53 @@
+
+
+JAVASCRIPT
+- CLIENT ---> Frontend -----> Browser
+
+
+---- API -----
+
+
+NodeJS
+- SERVER
+
+
+
+=================================
+Flow Routing
+- Pertama buat folder Routes dan Controller
+- buat file user.js didalam folder Controller
+const user = [
+    {
+        id: 1,
+        name: "Reva",
+        alamat: "Depok"
+    },
+    {
+        id: 2,
+        name: "Rey",
+        alamat: "Jakarta"
+    },
+
+]
+
+exports.getUser = (req, res) => {
+    res.json({
+        data: user,
+        message: "success"
+    })
+}
+
+- kemudian import file user controller ke routes
+- buat file index.js didalam routes
+- terus ketikan code dibawah ini
+const express = require("express");
+const router = express.Router();
+const {getUser}  = require("../controllers/users");
+
+router.get('/user', getUser)
+
+module.exports = router
+
+- kemudian import router kedalam main index.js
+const router = require("./routes");
+app.use(router);

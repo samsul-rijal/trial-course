@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h3>Masukan Data Produk</h3>
+    <form action="">
+        <div style="margin-bottom: 10px;">
+            <label for="name">Nama Produk</label>
+            <input id="name" type="text">
+            <p style="display: none;" id="error-name">error</p>
+        </div>
+        <div>
+            <label for="price">Harga Produk</label>
+            <input id="price" type="number">
+            <p style="display: none;" id="error-price">error</p>
+        </div>
+        <div>
+            <label for="category">Kategori Produk</label>
+            <select name="category" id="category">
+                <option value="">-- Pilih --</option>
+            </select>
+            <p style="display: none;" id="error-category">error</p>
+        </div>
+
+        <button type="button" onclick="insertProduct()">Simpan</button>
+    </form>
+
+    <hr>
+
+
+    <h3>Daftar Produk</h3>
+    <div id="product-list">
+        <p>Nama Produk: </p>
+        <p>Harga Produk: </p>
+        <p>Kategori Produk: </p>
+    </div>
+    <hr>
+
+
+
+    <h2>DAFTAR USERS</h2>
+    <div id="user-list">
+        <p>name</p>
+        <p>email</p>
+        <p>perusahaan</p>
+        <p>Kota</p>
+    </div>
+
+    <!-- <p id="product-name"></p>
+    <p id="product-price"></p>
+    <p id="product-amount"></p>
+    <p id="product-total"></p>
+    <p id="product-discount"></p>
+    <p id="product-cash"></p> -->
+
+    <!-- <script src="harilima.js"></script> -->
+    <!-- <script src="harienam.js"></script> -->
+    <!-- <script src="script.js"></script> -->
+    <script src="haritujuh.js"></script>
+
+    
+</body>
+</html>
