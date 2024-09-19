@@ -12,33 +12,50 @@ const user = [
 
 ]
 
-exports.getUser = (req, res) => {
-    res.json({
-        data: user,
-        message: "success"
-    })
+const connection = require("../db/connection")
+
+exports.getUser = async(req, res) => {
+
+    try {
+
+        const result = await connection.query('SELECT * FROM users ORDER BY id ASC');
+        console.log(result.rows);
+
+        res.json({
+            data: result.rows,
+            message: "success"
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-exports.getUserById = (req, res) => {
-    // filter => hasilnya array
-    // find => hasilnya object
-    // console.log(req.params.id);
+exports.getUserById = async(req, res) => {
     const ID = parseInt(req.params.id)
 
-    const userFindOne = user.find((item) => item.id == ID)
-    // console.log(userFindOne);
+    try {
 
-    if(!userFindOne){
-        res.status(404).json({
-            code: 404,
-            message: `id ${ID} not found`
+        const result = await connection.query(`SELECT * FROM users WHERE id = ${ID}`);
+        // console.log(result.rows);
+        const userData = result.rows[0]
+        // console.log(userData);
+
+        if(!userData){
+            res.status(404).json({
+                code: 404,
+                message: `id ${ID} not found`
+            })
+        }
+
+        res.json({
+            data: userData,
+            message: "success"
         })
-    }
 
-    res.status(200).json({
-        data: userFindOne,
-        message: "success"
-    })
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
