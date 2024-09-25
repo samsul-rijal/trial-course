@@ -51,3 +51,30 @@ module.exports = router
 - kemudian import router kedalam main index.js
 const router = require("./routes");
 app.use(router);
+
+
+
+
+
+
+
+
+
+
+
+
+========================================
+
+npm i sequelize seqelize-cli
+npx sequelize-cli init
+
+
+npx sequelize-cli model:generate --name User --attributes name:string,email:string,address:string
+
+npx sequelize-cli db:migrate
+
+
+
+//===============================================================//
+RELASI MENGGUNAKAN ORM
+Uploda File menggunakan multer

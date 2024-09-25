@@ -1,28 +1,30 @@
-const user = [
-    {
-        id: 1,
-        nama: "Reva",
-        alamat: "Depok"
-    },
-    {
-        id: 2,
-        nama: "Rey",
-        alamat: "Jakarta"
-    },
+// const connection = require("../db/connection")
+const {User} = require("../models")
 
-]
 
-const connection = require("../db/connection")
+const findOneUser = async(id, res) => {
+
+    const result = await User.findOne({ where: { id: id } })        
+
+    if(!result){
+        return res.status(404).json({
+            code: 404,
+            message: `id ${id} not found`
+        })
+    }
+
+    return result
+
+}
 
 exports.getUser = async(req, res) => {
 
     try {
 
-        const result = await connection.query('SELECT * FROM users ORDER BY id ASC');
-        console.log(result.rows);
-
+        const result = await User.findAll()
+        
         res.json({
-            data: result.rows,
+            data: result,
             message: "success"
         })
 
@@ -32,24 +34,23 @@ exports.getUser = async(req, res) => {
 }
 
 exports.getUserById = async(req, res) => {
-    const ID = parseInt(req.params.id)
-
+    
     try {
+        
+        const ID = parseInt(req.params.id)
+        // const result = await User.findOne({ where: { id: ID } })        
 
-        const result = await connection.query(`SELECT * FROM users WHERE id = ${ID}`);
-        // console.log(result.rows);
-        const userData = result.rows[0]
-        // console.log(userData);
+        // if(!result){
+        //     res.status(404).json({
+        //         code: 404,
+        //         message: `id ${ID} not found`
+        //     })
+        // }
 
-        if(!userData){
-            res.status(404).json({
-                code: 404,
-                message: `id ${ID} not found`
-            })
-        }
+        const result = await findOneUser(ID, res)
 
         res.json({
-            data: userData,
+            data: result,
             message: "success"
         })
 
@@ -59,53 +60,74 @@ exports.getUserById = async(req, res) => {
 }
 
 
-exports.insertUser = (req, res) => {
+exports.insertUser = async(req, res) => {
 
-    const ID = user.length + 1
-    // console.log(ID);
-    console.log(req.body);
     const newUser = {
-        id: ID,
-        nama: req.body.nama,
-        alamat: req.body.alamat
+        name: req.body.name,
+        email: req.body.email,
+        address: req.body.address
     }
 
-    user.push(newUser)
-
+    const result = await User.create(newUser)
 
     res.status(201).json({
         code: 201,
-        data: newUser,
+        data: result,
         message: "data berhasil ditambahkan"
     })
 }
 
 
 
-exports.editUser = (req, res) => {
+exports.editUser = async(req, res) => {
 
     const ID = parseInt(req.params.id)
 
-    const indexUser = user.findIndex((item) => item.id == ID)
-    console.log(indexUser);
+    const result = await User.findOne({ where: { id: ID } })        
 
-    user[indexUser].nama = req.body.nama 
-    user[indexUser].alamat = req.body.alamat
+    if(!result){
+       return res.status(404).json({
+            code: 404,
+            message: `id ${ID} not found`
+        })
+    }
+    // await findOneUser(ID, res)
+
+
+    const updateUser = {
+        name: req.body.name,
+        email: req.body.email,
+        address: req.body.address
+    }
+
+    await User.update(updateUser,  {where: { id: ID } })
 
     res.status(200).json({
-        data: user[indexUser],
-        message: "success"
+        data: updateUser,
+        message: "update data berhasil"
     })
 }
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async(req, res) => {
 
     const ID = parseInt(req.params.id)
 
-    const indexUser = user.findIndex((item) => item.id == ID)
-    user.splice(indexUser, 1)
+    const result = await User.findOne({ where: { id: ID } })        
 
-    res.status(200).json({
+    if(!result){
+        return res.status(404).json({
+            code: 404,
+            message: `id ${ID} not found`
+        })
+    }
+
+    await User.destroy({
+        where: {
+          id: ID,
+        },
+    });
+
+    return res.status(200).json({
         message: "data berhasil dihapus"
     })
 }
