@@ -1,3 +1,4 @@
+const deleteFile = require("../middlewares/deleteFile");
 const {Transaction, User, Product, ProductTransaction} = require("../models")
 
 
@@ -9,13 +10,25 @@ exports.getTransaction = async(req, res) => {
             attributes: {
                 exclude: ['userId','role']
             },
-            include: {
-                model: User,
-                as: 'user',
-                attributes: {
-                    exclude: ['createdAt','updatedAt']
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: {
+                        exclude: ['createdAt','updatedAt']
+                    }
+                },
+                {
+                    model: Product,
+                    attributes: {
+                        exclude: ['userId']
+                    },
+                    through: {
+                        model: ProductTransaction,
+                        attributes: ['quantity']
+                    },
                 }
-            }
+            ]
         })
         
         res.json({
@@ -37,13 +50,25 @@ exports.getTransactionById = async(req, res) => {
             attributes: {
                 exclude: ['userId','role']
             },
-            include: {
-                model: User,
-                as: 'user',
-                attributes: {
-                    exclude: ['createdAt','updatedAt']
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: {
+                        exclude: ['createdAt','updatedAt']
+                    }
+                },
+                {
+                    model: Product,
+                    attributes: {
+                        exclude: ['userId']
+                    },
+                    through: {
+                        model: ProductTransaction,
+                        attributes: ['quantity']
+                    },
                 }
-            }
+            ]
         })        
 
         if(!result){
@@ -130,7 +155,7 @@ exports.insertTransaction = async(req, res) => {
             totalPrice += itemTotal
 
             // addProduct didapatkan dari asosiasi dari belongtomany
-            await ProductTransaction.addProduct(productData, {
+            await newTransaction.addProduct(productData, {
                 through: {quantity: item.quantity}
             });
             

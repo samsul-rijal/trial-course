@@ -98,3 +98,8 @@ hasMany = 1 user memiliki banyak product
     name: 'jhon',
     product: []
 }
+
+
+// ==========================================
+ENV
+LOGIN / REGISTER

@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       Product.belongsTo(models.User, {
         as: 'user',
         foreignKey: 'userId'
-      })
+      });
+
+      Product.belongsToMany(models.Transaction, {
+        through: 'ProductTransaction',
+        foreignKey: 'productId'
+      });
 
     }
   }
@@ -22,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     price: DataTypes.FLOAT,
     stock: DataTypes.INTEGER,
+    image: DataTypes.STRING,
     userId: DataTypes.INTEGER,
   }, {
     sequelize,

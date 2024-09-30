@@ -1,4 +1,8 @@
+const deleteFile = require("../middlewares/deleteFile");
 const {Product, User} = require("../models")
+
+
+const pathFile = 'http://localhost:8000/uploads/'
 
 exports.getProduct = async(req, res) => {
 
@@ -16,13 +20,19 @@ exports.getProduct = async(req, res) => {
                 }
             }
         })
+
+        const dataProducts = result.map((item) => {
+            const plainItem = item.get({ plain: true }); // Dapatkan objek biasa
+            return { ...plainItem, image: pathFile + plainItem.image }; // Pastikan untuk mengakses plainItem.image
+        });
         
         res.json({
-            data: result,
+            data: dataProducts,
             message: "success"
         })
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             code: 500,
             message: "internal server errror"
@@ -48,6 +58,9 @@ exports.getProductById = async(req, res) => {
             }
         })        
 
+        const plainItem = result.get({ plain: true });
+        const dataProduct = {...plainItem, image: pathFile + result.image}
+
         if(!result){
             res.status(404).json({
                 code: 404,
@@ -56,11 +69,12 @@ exports.getProductById = async(req, res) => {
         }
 
         res.json({
-            data: result,
+            data: dataProduct,
             message: "success"
         })
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             code: 500,
             message: "internal server errror"
@@ -69,16 +83,18 @@ exports.getProductById = async(req, res) => {
 }
 
 exports.insertProduct = async(req, res) => {
+    console.log(req.file);
 
     try {
         const newProduct = {
             name: req.body.name,
             price: req.body.price,
             stock: req.body.stock,
+            image: req.file.filename,
             userId: req.body.userId,
 
         }
-        // console.log(newProduct);
+        console.log(newProduct);
     
         const result = await Product.create(newProduct)
     
@@ -88,6 +104,7 @@ exports.insertProduct = async(req, res) => {
             message: "data berhasil ditambahkan"
         })
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             code: 500,
             message: "internal server errror"
@@ -142,6 +159,8 @@ exports.deleteProduct = async(req, res) => {
               id: ID,
             },
         });
+
+        deleteFile(result.image) // fungsi untuk delete file
     
         return res.status(200).json({
             message: "data berhasil dihapus"

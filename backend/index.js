@@ -4,6 +4,7 @@ const router = require("./routes");
 const errorHandler = require("./utils/errorHandler");
 
 const app = express();
+app.use('/uploads', express.static('uploads')) // untuk buat path file upload
 app.use(express.json()); // fungsinya untuk menangkap isi request body dari method post
 app.use(cors());
 app.use(router);
