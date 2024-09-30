@@ -1,5 +1,5 @@
 // const connection = require("../db/connection")
-const {User} = require("../models")
+const {User, Product, Transaction} = require("../models")
 
 
 const findOneUser = async(id, res) => {
@@ -21,7 +21,26 @@ exports.getUser = async(req, res) => {
 
     try {
 
-        const result = await User.findAll()
+        const result = await User.findAll(
+            {
+                include: [
+                    {
+                        model: Product,
+                        attributes: {
+                            exclude: ['createdAt','updatedAt']
+                        }
+                    },
+                    {
+                        model: Transaction,
+                        attributes: {
+                            exclude: ['createdAt','updatedAt']
+                        }
+                    }
+                ]
+                
+                
+            }
+        )
         
         res.json({
             data: result,
@@ -38,16 +57,16 @@ exports.getUserById = async(req, res) => {
     try {
         
         const ID = parseInt(req.params.id)
-        // const result = await User.findOne({ where: { id: ID } })        
+        const result = await User.findOne({ where: { id: ID } })        
 
-        // if(!result){
-        //     res.status(404).json({
-        //         code: 404,
-        //         message: `id ${ID} not found`
-        //     })
-        // }
+        if(!result){
+            res.status(404).json({
+                code: 404,
+                message: `id ${ID} not found`
+            })
+        }
 
-        const result = await findOneUser(ID, res)
+        // const result = await findOneUser(ID, res)
 
         res.json({
             data: result,
@@ -60,21 +79,41 @@ exports.getUserById = async(req, res) => {
 }
 
 
-exports.insertUser = async(req, res) => {
+exports.insertUser = async(req, res, next) => {
 
-    const newUser = {
-        name: req.body.name,
-        email: req.body.email,
-        address: req.body.address
+    try {
+        const newUser = {
+            name: req.body.name,
+            email: req.body.email,
+            address: req.body.address
+        }
+    
+        const result = await User.create(newUser)
+    
+        res.status(201).json({
+            code: 201,
+            data: result,
+            message: "data berhasil ditambahkan"
+        })
+    } catch (error) {
+
+        // if(error.name === 'SequelizeUniqueConstraintError'){
+        //     res.status(400).json({
+        //         code: 400,
+        //         message: error.errors[0].message
+        //     })
+
+        // } else {
+        //     res.status(500).json({
+        //         code: 500,
+        //         error: error.errors[0].message,
+        //         message: "internal server errro"
+        //     })
+        // }
+
+        // Jika terjadi kesalahan, teruskan ke middleware error handler
+        next(error);
     }
-
-    const result = await User.create(newUser)
-
-    res.status(201).json({
-        code: 201,
-        data: result,
-        message: "data berhasil ditambahkan"
-    })
 }
 
 

@@ -78,3 +78,23 @@ npx sequelize-cli db:migrate
 //===============================================================//
 RELASI MENGGUNAKAN ORM
 Uploda File menggunakan multer
+
+
+
+
+npx sequelize-cli seed:generate --name demo-user
+
+hasOne = 1 user memiliki 1 profile
+
+{
+    name: 'jhon',
+    profile: {
+
+    }
+}
+
+hasMany = 1 user memiliki banyak product
+{
+    name: 'jhon',
+    product: []
+}

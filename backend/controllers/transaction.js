@@ -1,12 +1,13 @@
-const {Product, User} = require("../models")
+const {Transaction, User} = require("../models")
 
-exports.getProduct = async(req, res) => {
+
+exports.getTransaction = async(req, res) => {
 
     try {
 
-        const result = await Product.findAll({
+        const result = await Transaction.findAll({
             attributes: {
-                exclude: ['userId']
+                exclude: ['userId','role']
             },
             include: {
                 model: User,
@@ -23,21 +24,18 @@ exports.getProduct = async(req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({
-            code: 500,
-            message: "internal server errror"
-        })
+        console.log(error);
     }
 }
 
-exports.getProductById = async(req, res) => {
+exports.getTransactionById = async(req, res) => {
     
     try {
         
         const ID = parseInt(req.params.id)
-        const result = await Product.findByPk(ID, {
+        const result = await Transaction.findByPk(ID, {
             attributes: {
-                exclude: ['userId']
+                exclude: ['userId','role']
             },
             include: {
                 model: User,
@@ -68,19 +66,15 @@ exports.getProductById = async(req, res) => {
     }
 }
 
-exports.insertProduct = async(req, res) => {
+exports.insertTransaction = async(req, res) => {
 
     try {
-        const newProduct = {
-            name: req.body.name,
-            price: req.body.price,
-            stock: req.body.stock,
+        const newTransaction = {
             userId: req.body.userId,
-
+            productId: req.body.productId,
         }
-        // console.log(newProduct);
     
-        const result = await Product.create(newProduct)
+        const result = await Transaction.create(newTransaction)
     
         res.status(201).json({
             code: 201,
@@ -88,68 +82,48 @@ exports.insertProduct = async(req, res) => {
             message: "data berhasil ditambahkan"
         })
     } catch (error) {
+
+
         res.status(500).json({
             code: 500,
             message: "internal server errror"
         })
+    
+    
     }
 }
 
-exports.editProduct = async(req, res) => {
+exports.editTransaction = async(req, res) => {
 
     try {
-        const editProduct = {
-            name: req.body.name,
-            price: req.body.price,
-            stock: req.body.stock,
-            userId: req.body.userId,
-
-        }
-        // console.log(editProduct);
-    
-        const result = await Product.update(editProduct, {where: {id: ID}})
-    
-        res.status(200).json({
-            code: 200,
-            data: result,
-            message: "data berhasil diedit"
-        })
-    } catch (error) {
-        res.status(500).json({
-            code: 500,
-            message: "internal server errror"
-        })
-    }
-}
-
-exports.deleteProduct = async(req, res) => {
-
-    try {
-        
         const ID = parseInt(req.params.id)
 
-        const result = await Product.findOne({ where: { id: ID } })        
+        const result = await Transaction.findByPk(ID)   
     
         if(!result){
-            return res.status(404).json({
+           return res.status(404).json({
                 code: 404,
                 message: `id ${ID} not found`
             })
         }
     
-        await Product.destroy({
-            where: {
-              id: ID,
-            },
-        });
+        const updateTransaction = {
+            userId: req.body.userId,
+            productId: req.body.productId,
+            status: req.body.status
+        }
     
-        return res.status(200).json({
-            message: "data berhasil dihapus"
+        const resultTrans = await Transaction.update(updateTransaction, {where: { id: ID } })
+    
+        res.status(200).json({
+            data: resultTrans,
+            message: "update data berhasil"
         })
     } catch (error) {
         res.status(500).json({
             code: 500,
             message: "internal server errror"
         })
+        
     }
 }
