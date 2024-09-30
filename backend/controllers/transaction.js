@@ -1,4 +1,4 @@
-const {Transaction, User} = require("../models")
+const {Transaction, User, Product, ProductTransaction} = require("../models")
 
 
 exports.getTransaction = async(req, res) => {
@@ -68,28 +68,93 @@ exports.getTransactionById = async(req, res) => {
 
 exports.insertTransaction = async(req, res) => {
 
+    // try {
+    //     const newTransaction = {
+    //         userId: req.body.userId,
+    //         productId: req.body.productId,
+    //     }
+    
+    //     const result = await Transaction.create(newTransaction)
+    
+    //     res.status(201).json({
+    //         code: 201,
+    //         data: result,
+    //         message: "data berhasil ditambahkan"
+    //     })
+    // } catch (error) {
+
+
+    //     res.status(500).json({
+    //         code: 500,
+    //         message: "internal server errror"
+    //     })
+
+    // }
+
+    // request body
+    // {
+    //     userId: 1,
+    //     product: [
+    //         {productId: 1, quantity: 2},
+    //         {productId: 2, quantity: 3},
+    //     ]
+
+    // }
+
+    const {userId, product} = req.body
     try {
-        const newTransaction = {
-            userId: req.body.userId,
-            productId: req.body.productId,
+
+        if(!userId || !Array.isArray(product) || product.length === 0){
+            return res.status(400).json({code: 400, message: 'userId and product is required'})
         }
-    
-        const result = await Transaction.create(newTransaction)
-    
+
+        const findUser = await User.findByPk(userId)
+        if(!findUser){
+            return res.status(400).json({code: 400, message: 'userId not found'})
+        }
+
+        const newTransaction = await Transaction.create({
+            userId: userId,
+            transactionDate: new Date(),
+        });
+
+        let totalPrice = 0 // variabel untuk menyimpan data totalPrice
+
+        for(const item of product){
+            const productData = await Product.findByPk(item.productId)
+            if(!productData){
+                return res.status(400).json({code: 400, message: 'productId not found'})
+            }
+
+            const itemTotal = productData.price * item.quantity
+            totalPrice += itemTotal
+
+            // addProduct didapatkan dari asosiasi dari belongtomany
+            await ProductTransaction.addProduct(productData, {
+                through: {quantity: item.quantity}
+            });
+            
+        }
+        
+        newTransaction.totalPrice = totalPrice
+        await newTransaction.save() // fungsinya untuk update total price
+
         res.status(201).json({
-            code: 201,
-            data: result,
-            message: "data berhasil ditambahkan"
+            userId,
+            product,
+            totalPrice,
+            message: "success"
         })
+        
     } catch (error) {
 
+        console.log(error);
 
         res.status(500).json({
             code: 500,
             message: "internal server errror"
         })
-    
-    
+        
     }
 }
 

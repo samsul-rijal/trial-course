@@ -14,7 +14,12 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(models.User, {
         as: 'user',
         foreignKey: 'userId'
-      })
+      });
+
+      Transaction.belongsToMany(models.Product, {
+        through: 'ProductTransaction',
+        foreignKey: 'transactionId'
+      });
     }
   }
   Transaction.init({
@@ -28,19 +33,15 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     },
-    productId: {
-      allowNull: false,
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'Products',
-        key: 'id'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+    totalPrice: {
+      type: DataTypes.DECIMAL(10, 2)
     },
-    status: {
-      type: DataTypes.ENUM('pending','success','reject'),
+    paymentStatus: {
+      type: DataTypes.ENUM('pending','success','failed'),
       defaultValue: 'pending'
+    },
+    transactionDate: {
+      type: DataTypes.DATE
     },
   }, {
     sequelize,
