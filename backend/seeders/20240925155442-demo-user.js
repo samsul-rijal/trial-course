@@ -16,6 +16,7 @@ module.exports = {
       {
         name: 'John',
         email: 'example@example.com',
+        password: '$2b$10$3ksuYpzK.joTF6JlqNLCseY1JjIMv6jk0EeOrYTnj342adctD6OwC',
         address: 'Tangerang',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -23,6 +24,7 @@ module.exports = {
       {
         name: 'John2',
         email: 'example2@example.com',
+        password: '$2b$10$3ksuYpzK.joTF6JlqNLCseY1JjIMv6jk0EeOrYTnj342adctD6OwC',
         address: 'Tangerang',
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -30,6 +32,7 @@ module.exports = {
       {
         name: 'John3',
         email: 'example3@example.com',
+        password: '$2b$10$3ksuYpzK.joTF6JlqNLCseY1JjIMv6jk0EeOrYTnj342adctD6OwC',
         address: 'Tangerang',
         createdAt: new Date(),
         updatedAt: new Date(),

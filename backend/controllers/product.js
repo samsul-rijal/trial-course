@@ -6,9 +6,15 @@ const pathFile = 'http://localhost:8000/uploads/'
 
 exports.getProduct = async(req, res) => {
 
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit 
+    console.log(offset);
+
     try {
 
-        const result = await Product.findAll({
+        const { count, rows }  = await Product.findAndCountAll({limit: limit, offset: offset},{
             attributes: {
                 exclude: ['userId']
             },
@@ -21,13 +27,20 @@ exports.getProduct = async(req, res) => {
             }
         })
 
-        const dataProducts = result.map((item) => {
+        const dataProducts = rows.map((item) => {
             const plainItem = item.get({ plain: true }); // Dapatkan objek biasa
             return { ...plainItem, image: pathFile + plainItem.image }; // Pastikan untuk mengakses plainItem.image
         });
+
+        // count 30
+        // limit 5
+        // totalPage 3
         
         res.json({
             data: dataProducts,
+            totalItem: count,
+            totalPage: Math.ceil(count / limit),
+            currentPage: page, 
             message: "success"
         })
 
@@ -83,7 +96,7 @@ exports.getProductById = async(req, res) => {
 }
 
 exports.insertProduct = async(req, res) => {
-    console.log(req.file);
+    // console.log(req.file);
 
     try {
         const newProduct = {
@@ -91,7 +104,8 @@ exports.insertProduct = async(req, res) => {
             price: req.body.price,
             stock: req.body.stock,
             image: req.file.filename,
-            userId: req.body.userId,
+            // userId: req.body.userId,
+            userId: req.user.id, // ngambil data dari token
 
         }
         console.log(newProduct);

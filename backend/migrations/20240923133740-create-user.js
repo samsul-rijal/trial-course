@@ -17,6 +17,9 @@ module.exports = {
         allowNull: true,
         unique: true,
       },
+      password: {
+        type: Sequelize.STRING
+      },
       address: {
         type: Sequelize.TEXT
       },

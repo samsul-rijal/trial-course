@@ -19,6 +19,8 @@ const findOneUser = async(id, res) => {
 
 exports.getUser = async(req, res) => {
 
+    console.log(req.user);
+
     try {
 
         const result = await User.findAll(
@@ -30,7 +32,11 @@ exports.getUser = async(req, res) => {
                             exclude: ['createdAt','updatedAt']
                         }
                     }
-                ]
+                ],
+
+                attributes: {
+                    exclude: ['password']
+                }
                 
                 
             }
