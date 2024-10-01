@@ -1,9 +1,6 @@
 const deleteFile = require("../middlewares/deleteFile");
 const {Product, User} = require("../models")
 
-
-const pathFile = 'http://localhost:8000/uploads/'
-
 exports.getProduct = async(req, res) => {
 
 
@@ -29,7 +26,7 @@ exports.getProduct = async(req, res) => {
 
         const dataProducts = rows.map((item) => {
             const plainItem = item.get({ plain: true }); // Dapatkan objek biasa
-            return { ...plainItem, image: pathFile + plainItem.image }; // Pastikan untuk mengakses plainItem.image
+            return { ...plainItem, image: process.env.PATH_FILE + plainItem.image }; // Pastikan untuk mengakses plainItem.image
         });
 
         // count 30
@@ -72,7 +69,7 @@ exports.getProductById = async(req, res) => {
         })        
 
         const plainItem = result.get({ plain: true });
-        const dataProduct = {...plainItem, image: pathFile + result.image}
+        const dataProduct = {...plainItem, image: process.env.PATH_FILE + result.image}
 
         if(!result){
             res.status(404).json({
