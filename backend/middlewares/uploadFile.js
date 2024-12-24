@@ -45,13 +45,16 @@ const fileUpload = (imageFile) => {
       }
 
       // kondisi jika file wajib diisi
-      if(!req.file && !err){
-        return res.status(400).json({
-          message: 'Image is required!'
-        })
-      }
 
-    console.log(req.file);
+      // console.log(req.file);
+      
+      // if(!req.file && !err){
+      //   return res.status(400).json({
+      //     message: 'Image is required!'
+      //   })
+      // }
+
+    // console.log(req.file);
 
       // kondisi untuk max size
       console.log(err);

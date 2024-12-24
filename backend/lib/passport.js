@@ -23,7 +23,8 @@ passport.use(new JWTStrategy({
         const userAvail = {
             id: user.id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
 
         // dia akan masuk ke req.user

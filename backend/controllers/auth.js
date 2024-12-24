@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 exports.register = async(req, res) => {
 
 
-    const {name, email, password, address} = req.body
+    const {name, email, password, address, role} = req.body
 
     const saltRound = 10 // waktu encrypt password per detik ~10 hashes/sec
     const encryptPassword = bcrypt.hashSync(password, saltRound)
@@ -19,7 +19,8 @@ exports.register = async(req, res) => {
         name,
         email,
         password: encryptPassword,
-        address
+        address,
+        role
     }
 
     const result = await User.create(newUser)
@@ -54,7 +55,7 @@ exports.login = async(req, res) => {
     if(!isMatch){
         return res.status(400).json({
             code: 400,
-            message: `not a match`
+            message: `password salah`
         })
     }
 
@@ -64,7 +65,7 @@ exports.login = async(req, res) => {
         id: user.id,
         name: user.name,
         email: user.email
-    }, secretKey, {expiresIn: '10m'})
+    }, secretKey, {expiresIn: '12h'})
 
 
 
@@ -74,9 +75,25 @@ exports.login = async(req, res) => {
         data: {
             name: user.name,
             email: user.email,
+            role: user.role,
             token: accessToken
         },
         message: "login berhasil"
     })
 }
 
+
+exports.verifyToken = (req, res) => {
+    const user = req.user
+
+    try {
+        res.status(200).json({
+            data: user,
+            message: 'success'
+        })
+    } catch (error) {
+        console.log(error);
+        
+        
+    }
+}

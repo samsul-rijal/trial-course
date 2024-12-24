@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const deleteFile = require("../middlewares/deleteFile");
 const {Product, User} = require("../models")
 
@@ -10,8 +11,7 @@ exports.getProduct = async(req, res) => {
     console.log(offset);
 
     try {
-
-        const { count, rows }  = await Product.findAndCountAll({limit: limit, offset: offset},{
+        const { count, rows }  = await Product.findAndCountAll({limit: limit, offset: offset}, {
             attributes: {
                 exclude: ['userId']
             },
@@ -21,7 +21,57 @@ exports.getProduct = async(req, res) => {
                 attributes: {
                     exclude: ['createdAt','updatedAt']
                 }
-            }
+            },
+        })
+
+        const dataProducts = rows.map((item) => {
+            const plainItem = item.get({ plain: true }); // Dapatkan objek biasa
+            return { ...plainItem, image: process.env.PATH_FILE + plainItem.image }; // Pastikan untuk mengakses plainItem.image
+        });
+
+        // count 30
+        // limit 5
+        // totalPage 3
+        
+        res.json({
+            data: dataProducts,
+            totalItem: count,
+            totalPage: Math.ceil(count / limit),
+            currentPage: page, 
+            message: "success"
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            code: 500,
+            message: "internal server errror"
+        })
+    }
+}
+exports.getProductSeller = async(req, res) => {
+
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit 
+    console.log(offset);
+
+    console.log('user',req.user.id);
+    
+
+    try {
+        const { count, rows }  = await Product.findAndCountAll({where: {userId: req.user.id}, limit: limit, offset: offset}, {
+            attributes: {
+                exclude: ['userId']
+            },
+            include: {
+                model: User,
+                as: 'user',
+                attributes: {
+                    exclude: ['createdAt','updatedAt']
+                }
+            },
         })
 
         const dataProducts = rows.map((item) => {
@@ -93,7 +143,7 @@ exports.getProductById = async(req, res) => {
 }
 
 exports.insertProduct = async(req, res) => {
-    // console.log(req.file);
+    console.log(req.file);
 
     try {
         const newProduct = {
@@ -123,15 +173,19 @@ exports.insertProduct = async(req, res) => {
     }
 }
 
-exports.editProduct = async(req, res) => {
+exports.editProduct = async(req, res) => {    
+    const ID = parseInt(req.params.id)
+
+    console.log(req.body);
+    
 
     try {
         const editProduct = {
             name: req.body.name,
             price: req.body.price,
             stock: req.body.stock,
+            image: req.file?.filename,
             userId: req.body.userId,
-
         }
         // console.log(editProduct);
     
@@ -143,6 +197,8 @@ exports.editProduct = async(req, res) => {
             message: "data berhasil diedit"
         })
     } catch (error) {
+        console.log(error);
+        
         res.status(500).json({
             code: 500,
             message: "internal server errror"
